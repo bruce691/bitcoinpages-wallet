@@ -1,6 +1,8 @@
-# btcp-wallet
+# bitcoinpages-wallet
 
-> A BTC/BTC Javascript wallet
+> A BTC/LTC Javascript wallet
+This is a WIP part of my personnal Bitcoin toolbox. 
+The project if working on top of SparkJava microframework backend, a set of Bitcoin nodes and ElectrumX nodes setup on a Kubernetes engine.
 
 ## Build Setup
 
@@ -26,9 +28,3 @@ npm run e2e
 # run all tests
 npm test
 ```
-
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
-file supply able venture sing damp sort limit eager monitor leopard boil
-
-dove decorate organ clean seven mystery talk roof derive fall arm radio
-dove decorate organ clean seven mystery talk roof derive fall arm radio
