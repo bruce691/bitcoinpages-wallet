@@ -10,7 +10,7 @@ export default new Vuex.Store({
     newWallet: null,
     userCurrency: 'EUR',
     socket: {
-      isConnected: false,
+      isConnected: true,
       message: '',
       reconnectError: false
     },
@@ -55,6 +55,7 @@ export default new Vuex.Store({
     },
     SOCKET_ONOPEN (state, event) {
       state.socket.isConnected = true
+      state.socket.connecting = false
     },
     SOCKET_ONCLOSE (state, event) {
       state.socket.isConnected = false
@@ -66,7 +67,9 @@ export default new Vuex.Store({
     SOCKET_ONMESSAGE (state, message) {
       switch (message.method) {
         case 'wallet.rates':
-          state.rates = Rates.build(message.result)
+          if (message.result) {
+            state.rates = Rates.build(message.result)
+          }
           break
         case 'wallet.fees':
           console.log('should store fees ' + message.result)
@@ -80,7 +83,7 @@ export default new Vuex.Store({
     },
     // mutations for reconnect methods
     SOCKET_RECONNECT (state, count) {
-      console.info(state, count)
+      state.socket.reconnectCount = count
     },
     SOCKET_RECONNECT_ERROR (state) {
       state.socket.reconnectError = true

@@ -15,7 +15,7 @@ describe('storage/wallet', () => {
     wallet.import (mnemonic)
     return wallet
   }
-  /*
+
   it('wallet.getPath works for all coins', () => {
     var wallet = setupImportWallet('BTC')
     let path = wallet.getPath ('44', 0, 0, 0) 
@@ -55,10 +55,5 @@ describe('storage/wallet', () => {
     expect(message['name']).toEqual('plop')
     expect(message['xPub']).toEqual(wallet._xPub)
   })
-*/
-  it('it can get transaction from 3PBP', () => {
-    var wallet = setupImportWallet('BTC')
-    wallet.getTransactions(['1Mhz2VipTZU9NebBwjZh7whpDYwCpWLjmw'])
-  })
-
+  
 })

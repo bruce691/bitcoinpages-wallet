@@ -7,12 +7,12 @@
             <h5 class="text-xs-center grey--text" style="margin-bottom: 0px;">1 BTC - 24H</h5>
             <h2 class="text-xs-center">{{ rateObject.BTC.day }}</h2>
             <h5 class="text-xs-center" style="margin-top: 0px;">
-              <span v-if="BTCDTrend">1H
+              <span v-if="rateObject.BTC.trend.hour">1H
                 <span v-bind:class="{ 'red--text': (rateObject.BTC.trend.hour < 0), 
                                     'green--text': (rateObject.BTC.trend.hour >= 0) }">
-                  {{ BTCHTrend }}</span>%
+                  {{ rateObject.BTC.trend.hour }}</span>%
               </span>
-              <span v-if="BTCDTrend !==null"> <span class="grey--text">|</span> 24H
+              <span v-if="rateObject.BTC.trend.day !==null"> <span class="grey--text">|</span> 24H
                 <span v-bind:class="{ 'red--text': (rateObject.BTC.trend.day < 0), 
                                     'green--text': (rateObject.BTC.trend.day >= 0) }">
                   {{ rateObject.BTC.trend.day }}</span>%

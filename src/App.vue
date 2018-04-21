@@ -8,7 +8,7 @@
       </v-alert>
       <v-alert dismissible v-model="notConnected" transition="scale-transition">
         Network connection error
-      </v-alert>
+      </v-alert>  
       <router-view/>
 
 
@@ -42,7 +42,7 @@ var WSURL = 'wss://wallet.bitcoinpage.org/wss'
 
 Vue.use(VueNativeSock, WSURL, {
   reconnection: true,
-  reconnectionAttempts: 5,
+  reconnectionAttempts: 10,
   reconnectionDelay: 3000,
   store: Transient,
   format: 'json'
