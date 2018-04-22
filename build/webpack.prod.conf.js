@@ -39,6 +39,34 @@ const webpackConfig = merge(baseWebpackConfig, {
       sourceMap: config.build.productionSourceMap,
       parallel: true
     }),
+    new UglifyJsPlugin({
+      uglifyOptions: {
+        ecma: 8,
+        warnings: false,
+        output: {
+          comments: false,
+          beautify: false
+        },
+        mangle: {
+          reserved: [
+            'Buffer',
+            'BigInteger',
+            'Point',
+            'ECPubKey',
+            'ECKey',
+            'sha512_asm',
+            'asm',
+            'ECPair',
+            'HDNode'
+          ]
+        },
+        toplevel: false,
+        ie8: false,
+        keep_classnames: true,
+        keep_fnames: true,
+        safari10: false,
+      }
+    }),
     // extract css into its own file
     new ExtractTextPlugin({
       filename: utils.assetsPath('css/[name].[contenthash].css'),
