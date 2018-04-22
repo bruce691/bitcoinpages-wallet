@@ -55,7 +55,6 @@ export default new Vuex.Store({
     },
     SOCKET_ONOPEN (state, event) {
       state.socket.isConnected = true
-      state.socket.connecting = false
     },
     SOCKET_ONCLOSE (state, event) {
       state.socket.isConnected = false
