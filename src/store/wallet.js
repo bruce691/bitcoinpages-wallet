@@ -45,12 +45,16 @@ export class Wallet {
     return this
   }
 
+  // TODO unit test me
   sanitize () {
     var st = new StorageDecoder(this._xPub44)
-    this._xPriv = st.encode(this._node.toBase58())
     this._mnemonic = st.encode(this._mnemonic)
     delete this.backuped
     delete this.backupVerified
+    delete this._node
+    delete this._seed
+    delete this._xPriv
+    delete this.decodeKey
   }
 
   fromStorage (data) {

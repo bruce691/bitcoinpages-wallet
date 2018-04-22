@@ -8,7 +8,7 @@
       </v-alert>
       <v-alert dismissible v-model="notConnected" transition="scale-transition">
         Network connection error
-      </v-alert>  
+      </v-alert>
       <router-view/>
 
 
@@ -27,18 +27,17 @@ import axios from 'axios'
 import VueNativeSock from 'vue-native-websocket'
 
 Vue.prototype.$http = axios
-
+var WSURL = '/wss'
 if (process.env.NODE_ENV === 'development') {
-  // Vue.prototype.$baseUrl = 'http://127.0.0.1:4567'
+  Vue.prototype.$baseUrl = 'http://127.0.0.1:4567'
+  Vue.prototype.$socketUrl = 'ws://127.0.0.1:4567/ws'
+  WSURL = 'ws://127.0.0.1:4567/wss'
   // Vue.prototype.$baseUrl = 'http://192.168.1.49:4567'
-  Vue.prototype.$baseUrl = 'https://wallet.bitcoinpage.org'
-  Vue.prototype.$socketUrl = 'wss://wallet.bitcoinpage.org/ws'
+  // Vue.prototype.$baseUrl = 'https://wallet.bitcoinpage.org'
+  // Vue.prototype.$socketUrl = 'wss://wallet.bitcoinpage.org/ws'
 } else {
   Vue.prototype.$baseUrl = ''
-  Vue.prototype.$socketUrl = '/wss'
 }
-
-var WSURL = 'wss://wallet.bitcoinpage.org/wss'
 
 Vue.use(VueNativeSock, WSURL, {
   reconnection: true,
@@ -69,6 +68,9 @@ export default {
     'v-toolbar': Toolbar,
     'v-drawer': Drawer
   },
+  beforeDestroy: function () {
+    console.log('destroying ...')
+  },
   created: function () {
     var me = this
     EventBus.$on(Events.apiError, function (status, message) {
@@ -85,7 +87,7 @@ export default {
     EventBus.$on(Events.loadingEnd, function () {
       me.loading = false
     })
-    // this.$connect()
+
     this.$options.sockets.onmessage = (message) => {
       try {
         var response = JSON.parse(message.data)

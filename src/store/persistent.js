@@ -13,7 +13,6 @@ export default new Vuex.Store({
   state: {
     wallets: [],
     userName: null,
-    pinCode: null,
     user: { name: null, currency: Currencies[0] },
     addresses: []
   },
@@ -59,9 +58,6 @@ export default new Vuex.Store({
     updateUser: (state, user) => {
       console.log('set ', user)
       state.user = user
-    },
-    setPinCode: (state, pinCode) => {
-      state.pinCode = pinCode
     }
   },
   getters: {
@@ -82,7 +78,6 @@ export default new Vuex.Store({
       return state.userName
     },
     wallets: state => state.wallets,
-    pinCode: state => state.pinCode,
     user: state => state.user
   }
 })

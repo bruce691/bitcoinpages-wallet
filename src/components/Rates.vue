@@ -8,12 +8,12 @@
             <h2 class="text-xs-center">{{ rateObject.BTC.day }}</h2>
             <h5 class="text-xs-center" style="margin-top: 0px;">
               <span v-if="rateObject.BTC.trend.hour">1H
-                <span v-bind:class="{ 'red--text': (rateObject.BTC.trend.hour < 0), 
+                <span v-bind:class="{ 'red--text': (rateObject.BTC.trend.hour < 0),
                                     'green--text': (rateObject.BTC.trend.hour >= 0) }">
                   {{ rateObject.BTC.trend.hour }}</span>%
               </span>
               <span v-if="rateObject.BTC.trend.day !==null"> <span class="grey--text">|</span> 24H
-                <span v-bind:class="{ 'red--text': (rateObject.BTC.trend.day < 0), 
+                <span v-bind:class="{ 'red--text': (rateObject.BTC.trend.day < 0),
                                     'green--text': (rateObject.BTC.trend.day >= 0) }">
                   {{ rateObject.BTC.trend.day }}</span>%
               </span>
@@ -23,7 +23,7 @@
           </v-card-text>
       </v-card>
       </v-flex>
-        
+
       <v-flex sm11 md10 offset-md1 v-if="rateObject.LTC.day">
         <v-card  style="margin-top: 6px; margin-bottom: 80px;" class="blue darken-4" >
           <v-card-text>
@@ -32,12 +32,12 @@
             <h5 class="text-xs-center" style="margin-top: 0px;">
               <!-- last : {{ BTC24H }} -->
               <span v-if="rateObject.LTC.trend.hour  !==null">1H
-                <span v-bind:class="{ 'red--text': (rateObject.LTC.trend.hour < 0), 
+                <span v-bind:class="{ 'red--text': (rateObject.LTC.trend.hour < 0),
                                     'green--text': (rateObject.LTC.trend.hour >= 0) }">
                   {{ rateObject.LTC.trend.hour }}</span>%
               </span>
               <span v-if="rateObject.LTC.trend.day"> <span class="grey--text">|</span> 24H
-                <span v-bind:class="{ 'red--text': (rateObject.LTC.trend.day < 0), 
+                <span v-bind:class="{ 'red--text': (rateObject.LTC.trend.day < 0),
                                     'green--text': (rateObject.LTC.trend.day >= 0) }">
                   {{ rateObject.LTC.trend.day }}</span>%
               </span>
@@ -49,13 +49,14 @@
       </v-flex>
 
     </v-container>
-    
+    <!--
     <v-bottom-nav class="black-text indigo lighten-1" :value="true">
       <v-btn :to="{name: 'Wallets'}" raised value="favorites">
         <span>Open wallets</span>
         <v-icon light>account_balance_wallet</v-icon>
       </v-btn>
     </v-bottom-nav>
+    -->
 
   </v-content>
 

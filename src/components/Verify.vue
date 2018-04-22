@@ -38,11 +38,12 @@
 <script>
 import Transient from '../store/transient.js'
 import Persistent from '../store/persistent.js'
-import { EventBus } from '../event-bus.js'
+import {EventBus} from '../event-bus.js'
 import Events from '../store/event-api.js'
+import {Wallet} from '../store/wallet'
 
 export default {
-  name: 'Backup',
+  name: 'Verify',
   props: ['wallet2backup'],
   data () {
     return {
@@ -86,12 +87,9 @@ export default {
     }
   },
   mounted: function () {
-    this.cleanUp()
+
   },
   methods: {
-    cleanUp () {
-
-    },
     add2solution (item, index) {
       this.alert = false
       this.solution.push(item)
@@ -109,33 +107,39 @@ export default {
       }
     },
     dismiss () {
-      var wallet = Transient.getters.newWallet
-      wallet.backuped = false
-      wallet.backupVerified = false
-      Transient.commit('setNewWallet', null)
-      // Transient.commit('setNewWallet', wallet)
+      Transient.commit('clearNewWallet')
     },
     toggle () {
-      var wallet = Transient.getters.newWallet
-
-      if (wallet._mnemonic === this.solution.join(' ')) {
-        wallet.backuped = true
-        wallet.backupVerified = true
-        Transient.commit('setNewWallet', null)
-        Transient.commit('setNewWallet', wallet)
+      if (this.wallet._mnemonic === this.solution.join(' ')) {
+        this.wallet.backuped = true
+        this.wallet.backupVerified = true
         this.alert = false
       } else {
         this.alert = true
       }
     },
-    storeWallet () {
-      var wallet = Transient.getters.newWallet
-      wallet.sanitize()
-      Persistent.commit('addWallet', wallet)
+    storeWallet (decodeKey) {
+      let wallet = new Wallet(Transient.getters.newWallet._coin, Transient.getters.newWallet._name)
+      wallet._mnemonic = Transient.getters.newWallet._mnemonic
+      wallet._xPub = Transient.getters.newWallet._xPub
+      wallet._yPub = Transient.getters.newWallet._yPub
+      wallet._zPub = Transient.getters.newWallet._zPub
+      wallet.decodeKey = decodeKey
+
+      Transient.commit('addWallet', wallet)
+      let wallet2 = new Wallet(Transient.getters.newWallet._coin, Transient.getters.newWallet._name)
+      wallet2._mnemonic = Transient.getters.newWallet._mnemonic
+      wallet2._xPub = Transient.getters.newWallet._xPub
+      wallet2._yPub = Transient.getters.newWallet._yPub
+      wallet2._zPub = Transient.getters.newWallet._zPub
+      wallet2.sanitize()
+
+      Transient.commit('clearNewWallet')
+      Persistent.commit('addWallet', wallet2)
+      this.dismiss()
     },
     submitWallet () {
-      var wallet = Transient.getters.newWallet
-      var data = wallet.signCreateMessage(Transient.getters.pinCode)
+      var data = this.wallet.signCreateMessage(Transient.getters.pinCode)
       this.$http.post(this.$baseUrl + '/api/wallet/create', data).then(function (res) {
         if (res.body.error) {
           EventBus.$emit(Events.apiError, res.body.status, res.body.error)
@@ -144,16 +148,14 @@ export default {
         if (res.body.message &&
             res.body.xPub !== null &&
             res.body.message.decodeKey !== null) {
-          console.log('status', res.status)
           try {
-            Transient.commit('addWallet', res.body.message)
-            this.storeWallet()
-            this.dismiss()
+            this.storeWallet(res.body.message.decodeKey)
           } catch (e) {
             console.log(e)
             EventBus.$emit(Events.apiError, '', e)
           }
         } else {
+          console.log('unable to get open key')
           EventBus.$emit(Events.apiError, '200', '{ message: "unable to get open key"}')
         }
         EventBus.$emit(Events.loadingEnd)

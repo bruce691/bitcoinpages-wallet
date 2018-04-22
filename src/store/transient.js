@@ -47,6 +47,9 @@ export default new Vuex.Store({
     setNewWallet: (state, newWallet) => {
       state.newWallet = newWallet
     },
+    clearNewWallet: (state) => {
+      state.newWallet = null
+    },
     setBTCPrice: (state, p) => {
       state.rates.BTC = p
     },

@@ -3,6 +3,8 @@ import { Coins } from '../../../src/store/coins.js'
 import { StorageDecoder } from '../../../src/store/storageDecoder'
 import bitcoin from '../../../src/vendor/bitcoinjs-lib'
 
+
+
 describe('storage/wallet', () => {
 
   let xpub = 'xpub6Cd4Wz2ewNDeT6kCWgFTCYp5ZDDHJ7xqBV9RSHwg8L6rB4VVu49LERSyohcRHsJhVS5hN5cNM6ox6FzvUYqUNfEGwDVpSSAyRoESe4QtvJh'
@@ -18,11 +20,11 @@ describe('storage/wallet', () => {
 
   it('wallet.getPath works for all coins', () => {
     var wallet = setupImportWallet('BTC')
-    let path = wallet.getPath ('44', 0, 0, 0) 
+    let path = wallet.getPath ('44', 0, 0, 0)
     expect(path).toEqual("m/44'/0'/0'/0/0")
     var wallet = setupImportWallet('LTC')
-    path = wallet.getPath ('44', 0, 0, 0) 
-    expect(path).toEqual("m/44'/2'/0'/0/0")    
+    path = wallet.getPath ('44', 0, 0, 0)
+    expect(path).toEqual("m/44'/2'/0'/0/0")
   })
 
   it('import store a valid xPriv & xPub & wallet_id', () => {
@@ -36,14 +38,14 @@ describe('storage/wallet', () => {
     var wallet = setupImportWallet('BTC')
     var root44 = wallet.getChildAddress('44', 0, 0, 0)
     expect(root44.keyPair.getAddress().toString()).toEqual("1PLDRLacEkAaaiWnfojVDb5hWpwXvKJrRa")
-    expect( root44.keyPair.toWIF()).toEqual("KwksS3oTchQvPQqm1AV1T2H8bjJpWYKejSn3rRSSX3j7NBhxYbH5") 
+    expect( root44.keyPair.toWIF()).toEqual("KwksS3oTchQvPQqm1AV1T2H8bjJpWYKejSn3rRSSX3j7NBhxYbH5")
   })
 
   it('import correctly derive first segwit address', () => {
     var wallet = setupImportWallet('BTC')
     var root49 = wallet.getChildAddress('49', 0, 0, 0)
     expect(wallet.getBip49Address(root49)).toEqual("3GU5e9mPrLgPemhawVHHrDt6bjZZ6M9CPc")
-    expect( root49.keyPair.toWIF()).toEqual("L2c4fjxz2a58a42FPqYRdYLNAjTPWFGh2x2WWmMusj7BNc9vsjt3") 
+    expect( root49.keyPair.toWIF()).toEqual("L2c4fjxz2a58a42FPqYRdYLNAjTPWFGh2x2WWmMusj7BNc9vsjt3")
   })
 
   it('can sign a createWallet Message', () => {
@@ -54,6 +56,9 @@ describe('storage/wallet', () => {
     expect(message['pinCode']).toEqual('123456')
     expect(message['name']).toEqual('plop')
     expect(message['xPub']).toEqual(wallet._xPub)
+    // https://tools.bitcoin.com/verify-message/
+
   })
-  
+
+
 })

@@ -71,11 +71,11 @@ export default {
       drawer: null,
       username: '',
       items: [
-        { title: 'Settings', icon: 'settings', route: '/settings' },
-        { title: 'Wallets', icon: 'account_balance_wallet', route: '/' },
-        { title: 'Submit Ads', icon: 'rss_feed', route: '/' },
-        { title: 'Directory', icon: 'contacts', route: '/' },
-        { title: 'About', icon: 'question_answer', route: '/' }
+        { title: 'Settings', icon: 'settings', route: '/settings' }
+        // { title: 'Wallets', icon: 'account_balance_wallet', route: '/' },
+        // { title: 'Submit Ads', icon: 'rss_feed', route: '/' },
+        // { title: 'Directory', icon: 'contacts', route: '/' },
+        // { title: 'About', icon: 'question_answer', route: '/' }
       ],
       mini: false,
       right: null
