@@ -6,6 +6,7 @@ import WalletVue from '@/components/Wallet'
 import Receive from '@/components/Receive'
 import Send from '@/components/Send'
 import Rates from '@/components/Rates'
+import NewWallet from '@/components/NewWallet'
 
 Vue.use(Router)
 
@@ -15,6 +16,11 @@ export default new Router({
       path: '/',
       name: 'Rates',
       component: Rates
+    },
+    {
+      path: '/newwallet',
+      name: 'NewWallet',
+      component: NewWallet
     },
     {
       path: '/wallets',

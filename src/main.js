@@ -7,8 +7,9 @@ import VueResource from 'vue-resource'
 import persistent from './store/persistent'
 import transient from './store/transient'
 
-Vue.config.productionTip = false
+window.location.hash = ''
 
+Vue.config.productionTip = false
 Vue.use(VueResource)
 
 Vue.use(Vuetify)

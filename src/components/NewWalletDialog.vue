@@ -1,12 +1,18 @@
 <template>
-    <v-dialog v-model="dialog" persistent max-width="500px">
+    <v-dialog v-model="visible" persistent max-width="500px">
     <v-card>
         <v-card-title>
         <span class="headline">New {{coin.name}} wallet {{name}}</span>
         </v-card-title>
         <v-card-text>
         <v-container grid-list-md>
-            <v-layout wrap>
+          <v-layout v-if="loading" wrap>
+            <v-flex xs12  class="text-xs-center">
+              <v-computing></v-computing>
+            </v-flex>
+          </v-layout>
+
+            <v-layout v-if="!loading" wrap>
             <v-flex xs12>
                 <v-text-field :rules="ruleReq" v-model="name" label="Name" required></v-text-field>
             </v-flex>
@@ -26,75 +32,79 @@
             </v-flex>
             </v-layout>
         </v-container>
-        <small>*indicates required field</small>
+        <small v-if="!loading">*indicates required field</small>
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions v-if="!loading">
         <v-spacer></v-spacer>
         <v-btn color="blue darken-3" raised @click.native="dismiss()">Dismiss</v-btn>
-        <v-btn color="yellow darken-3" raised @click.native="addWallet()">Save</v-btn>
+        <v-btn color="yellow darken-3" raised @click.native="createWallet()">Save</v-btn>
         </v-card-actions>
     </v-card>
     </v-dialog>
 </template>
 
 <script>
-import { EventBus } from '../event-bus.js'
 import { Coins } from '../store/coins.js'
 import { Wallet } from '../store/wallet.js'
-import Events from '../store/event-api.js'
 import Transient from '../store/transient.js'
-// import Persistent from '../store/persistent.js'
+import Computing from '@/components/Computing'
+import router from '../router'
 
 export default {
   name: 'NewWalletDialog',
+  props: ['step'],
+  components: {
+    'v-computing': Computing
+  },
   data () {
     return {
-      backuped: false,
-      dialog: false,
-      extra: null,
+      visible: true,
+      loading: false,
       coin: { name: '', ticker: '' }, // an object of coin defs.
       coinDefs: Coins.getArray(),
       name: null,
-      wallet: null,
       ruleReq: [
         (v) => !!v || 'Field is required'
       ]
     }
   },
-  created: function () {
-    EventBus.$on(Events.newWalletDialog, this.toggle)
+  mounted: function () {
+    if (Transient.getters.newWallet) {
+      this.name = Transient.getters.newWallet.name
+      this.coin = Transient.getters.newWallet.coin
+    }
   },
   methods: {
-    toggle (extra) {
-      this.extra = extra
-      this.dialog = !this.dialog
+    wallet () {
+      return Transient.getters.newWallet
     },
-    dismiss (close) {
-      this.dialog = false
+    dismiss () {
+      router.push('Wallets')
     },
-    addWallet () {
-      if (!this.name ||
-           this.name.length < 1) {
-        return false
-      }
-      if (this.extra === 'create') {
-        this.createWallet()
-      } else if (this.extra === 'import') {
-        console.log('TODO call import')
-        this.dialog = false
-      }
+    walletCreated () {
+      this.loading = false
+      this.$emit('set-step', 2)
+    },
+    makeWallet () {
+      var me = this
+      return new Promise(() => {
+        let wallet = new Wallet(me.coin, me.name).fromScratch()
+        Transient.commit('setNewWallet', wallet)
+      })
     },
     createWallet () {
-      this.dialog = false
-      if (this.wallet == null) {
-        this.wallet = new Wallet(this.coin, this.name).fromScratch()
-        this.wallet.backuped = false
-      } else {
-        this.wallet.backuped = false
-        console.log('keeping pre-existing wallet')
+      if (this.coin.name === '' || this.name === null || this.name.trim().length < 1) {
+        return
       }
-      Transient.commit('setNewWallet', null)
-      Transient.commit('setNewWallet', this.wallet)
+      this.loading = true
+      if (!Transient.getters.newWallet) {
+        var me = this
+        setTimeout(function () {
+          me.makeWallet().then(me.walletCreated())
+        }, 500)
+      } else {
+        this.walletCreated()
+      }
     }
   }
 }

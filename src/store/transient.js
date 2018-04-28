@@ -63,7 +63,7 @@ export default new Vuex.Store({
       state.socket.isConnected = false
     },
     SOCKET_ONERROR (state, event) {
-      console.error(state, event)
+      // console.error(state, event)
     },
     // default handler called for all methods
     SOCKET_ONMESSAGE (state, message) {

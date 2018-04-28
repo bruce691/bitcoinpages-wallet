@@ -1,5 +1,5 @@
 <template>
-      <v-dialog max-width="480" :value="dialogOpen" persistent>
+      <v-dialog max-width="480" :value="true" persistent>
         <v-card>
             <v-alert v-model="alert" transition="scale-transition">
               {{message}}
@@ -7,7 +7,8 @@
           <v-card-title>
 
               <h3>Backup verifications</h3>
-              <p class="red--text">Please set your secret mnemonic phrase in correct order using buttons</p>
+              <p class="red--text" v-if="!validated">
+                Please set your secret mnemonic phrase in correct order using buttons</p>
           </v-card-title>
           <v-card-text>
             <v-layout wrap>
@@ -29,7 +30,7 @@
           </v-card-text>
         <v-card-actions>
           <v-btn @click.stop="dismiss()">Dismiss</v-btn>
-          <v-btn color="primary" raised @click.stop="submitWallet()" :disabled="validated == false">Done</v-btn>
+          <v-btn color="primary" raised @click.stop="submitWallet()" :disabled="validated === false">Done</v-btn>
           </v-card-actions>
         </v-card>
    </v-dialog>
@@ -41,12 +42,14 @@ import Persistent from '../store/persistent.js'
 import {EventBus} from '../event-bus.js'
 import Events from '../store/event-api.js'
 import {Wallet} from '../store/wallet'
+import router from '../router'
 
 export default {
   name: 'Verify',
   props: ['wallet2backup'],
   data () {
     return {
+      visible: true,
       solution: [],
       message: 'invalid solution',
       alert: false,
@@ -56,11 +59,6 @@ export default {
   computed: {
     wallet () {
       return Transient.getters.newWallet
-    },
-    dialogOpen: function () {
-      return Transient.getters.newWallet !== null &&
-              Transient.getters.newWallet.backuped === true &&
-              Transient.getters.newWallet.backupVerified === false
     },
     mnemonic () {
       if (this.wallet !== null) {
@@ -81,13 +79,7 @@ export default {
         }
         return a
       }
-    },
-    verified () {
-      return false
     }
-  },
-  mounted: function () {
-
   },
   methods: {
     add2solution (item, index) {
@@ -99,6 +91,7 @@ export default {
       }
     },
     removeFromSolution (item, index) {
+      this.validated = false
       this.solution.splice(index, 1)
       this.shuffled.push(item)
       this.alert = false
@@ -107,16 +100,7 @@ export default {
       }
     },
     dismiss () {
-      Transient.commit('clearNewWallet')
-    },
-    toggle () {
-      if (this.wallet._mnemonic === this.solution.join(' ')) {
-        this.wallet.backuped = true
-        this.wallet.backupVerified = true
-        this.alert = false
-      } else {
-        this.alert = true
-      }
+      router.push('Wallets')
     },
     storeWallet (decodeKey) {
       let wallet = new Wallet(Transient.getters.newWallet._coin, Transient.getters.newWallet._name)
@@ -134,11 +118,12 @@ export default {
       wallet2._zPub = Transient.getters.newWallet._zPub
       wallet2.sanitize()
 
-      Transient.commit('clearNewWallet')
       Persistent.commit('addWallet', wallet2)
+      Transient.commit('clearNewWallet')
       this.dismiss()
     },
     submitWallet () {
+      if (!this.validated) return
       var data = this.wallet.signCreateMessage(Transient.getters.pinCode)
       this.$http.post(this.$baseUrl + '/api/wallet/create', data).then(function (res) {
         if (res.body.error) {
@@ -150,6 +135,7 @@ export default {
             res.body.message.decodeKey !== null) {
           try {
             this.storeWallet(res.body.message.decodeKey)
+            router.push('Wallets')
           } catch (e) {
             console.log(e)
             EventBus.$emit(Events.apiError, '', e)

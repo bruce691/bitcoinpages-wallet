@@ -1,10 +1,10 @@
 <template>
-      <v-dialog max-width="480" :value="dialogOpen" persistent>
+      <v-dialog max-width="480" :value="true" persistent>
         <v-card>
           <v-card-title>
               <h3 class="green--text">Please backup</h3>
               This is your secret mnemonic phrase to recover your wallet.<br>
-              Do not use a computer,&nbsp;<span class="red--text">no print, no screenshot,</span> 
+              Do not use a computer,&nbsp;<span class="red--text">no print, no screenshot,</span>
               <span class="green--text">&nbsp;please use a pen and paper.</span>
           </v-card-title>
           <v-card-text>
@@ -21,7 +21,7 @@
 
           </v-card-text>
         <v-card-actions>
-          <p class="red--text">In the next  step we'll verify you took notes.</p>
+          <!-- <p class="red--text">In the next  step we'll verify you took notes.</p> -->
           <v-btn color="primary" raised @click.stop="toggle()">Backup Done</v-btn>
           </v-card-actions>
         </v-card>
@@ -37,10 +37,6 @@ export default {
     wallet () {
       return Transient.getters.newWallet
     },
-    dialogOpen: function () {
-      return Transient.getters.newWallet !== null &&
-              Transient.getters.newWallet.backuped === false
-    },
     mnemonics () {
       if (this.wallet && this.wallet._mnemonic) {
         if (process.env.NODE_ENV === 'development') {
@@ -52,11 +48,7 @@ export default {
   },
   methods: {
     toggle () {
-      var wallet = Transient.getters.newWallet
-      wallet.backuped = true
-      wallet.backupVerified = false
-      Transient.commit('setNewWallet', null)
-      Transient.commit('setNewWallet', wallet)
+      this.$emit('set-step', 3)
     }
   }
 }

@@ -1,10 +1,10 @@
 <template>
-      <v-dialog :value="pinCodeOpen" slot="activator" persistent fullscreen>
+      <v-dialog v-model="showPincode" persistent fullscreen>
         <v-card>
       <v-progress-linear v-if="loading" v-bind:indeterminate="true"></v-progress-linear>
       <v-alert dismissible v-model="alert" transition="scale-transition">
         {{message}}
-      </v-alert>   
+      </v-alert>
           <v-card-title>
               Please enter your pincode to unlock the software
           </v-card-title>
@@ -36,15 +36,10 @@ export default {
       alert: false,
       message: null,
       pinCode: null,
+      showPincode: true,
       ruleReq: [
         (v) => !!v || 'Pincode is required'
       ]
-    }
-  },
-  computed: {
-    pinCodeOpen () {
-      return Transient.getters.pinCode === null &&
-             Persistent.getters.wallets.length > 0
     }
   },
   methods: {
@@ -70,14 +65,8 @@ export default {
         if (res.body.message &&
             res.body.xPub !== null &&
             res.body.message.decodeKey !== null) {
-          try {
-            Transient.commit('addWallet', res.body.message)
-            Transient.commit('setPinCode', this.pinCode)
-          } catch (e) {
-            console.log(e)
-            this.message = e
-            this.alert = true
-          }
+          // Transient.commit('addWallet', res.body.message)
+          Transient.commit('setPinCode', this.pinCode)
         } else {
           this.message = 'unable to open wallet server says ' + res.body
           this.alert = true

@@ -77,6 +77,10 @@ export default new Vuex.Store({
       console.log('getting', state.userName)
       return state.userName
     },
+    getWallets (state) {
+      console.log('getting', state.wallets)
+      return state.wallets
+    },
     wallets: state => state.wallets,
     user: state => state.user
   }
