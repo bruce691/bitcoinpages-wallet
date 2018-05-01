@@ -13,7 +13,6 @@
             <v-flex xs12>
                 <v-text-field type="password" :rules="ruleMatch" v-model="pinCode2" label="Pincode (again)" required></v-text-field>
             </v-flex>
-            </v-flex>
           </v-layout>
           </v-card-text>
         <v-card-actions>
