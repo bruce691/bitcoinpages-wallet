@@ -4,10 +4,10 @@ import Events from '../store/event-api.js'
 import Transient from '../store/transient.js'
 
 export class StorageDecoder {
-  constructor (xPub) {
+  constructor (walletId) {
     this.wallets = Transient.getters.wallets
     for (var i = 0; i < this.wallets.length; i++) {
-      if (this.wallets[i].xPub === xPub) {
+      if (this.wallets[i]._walletId === walletId) {
         this._key = this.wallets[i].decodeKey
         console.log('storage decoder initialized')
         return this

@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import Transient from '../store/transient.js'
 import Persistent from '../store/persistent.js'
 
@@ -50,18 +51,15 @@ export default {
       }
     },
     openWallet (wallet) {
+      console.log(wallet)
       this.loading = true
       var data = {
         message: {
-          xPub: wallet._xPub44,
+          xPub: wallet._xPub,
           pinCode: this.pinCode
         }
       }
-      var baseUrl = ''
-      if (process.env.NODE_ENV === 'development') {
-        baseUrl = 'http://localhost:8080'
-      }
-      this.$http.post(baseUrl + '/api/wallet/open', data).then(function (res) {
+      this.$http.post(Vue.prototype.$baseUrl + '/api/wallet/open', data).then(function (res) {
         if (res.body.message &&
             res.body.xPub !== null &&
             res.body.message.decodeKey !== null) {
@@ -73,13 +71,14 @@ export default {
         }
         this.loading = false
       }, response => {
+        this.loading = false
         // this.pinCodeOpen = true
         if (response.body.status === 404) {
           Persistent.commit('suicide', data.message.xPub)
         }
         this.alert = true
-        this.message = response.status + ' unable to open wallet server says: "' + response.body.message + '"'
-        this.loading = false
+        let serverSays = JSON.parse(response.bodyText).error
+        this.message = response.status + ' unable to open wallet server says: "' + serverSays + '"'
       })
     },
     toggle () {

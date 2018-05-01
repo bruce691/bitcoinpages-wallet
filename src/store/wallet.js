@@ -5,10 +5,11 @@ import { StorageDecoder } from '../store/storageDecoder.js'
 import axios from 'axios'
 
 export class Wallet {
-  constructor (coin, name) {
-    if (coin === null || coin.ticker === null) {
-      throw new Error('storage/wallet invalid instanciation')
+  constructor (coin, name, derivation) {
+    if (coin === null || coin.ticker === null || derivation === null) {
+      throw new Error('invalid wallet instanciation')
     }
+    this._derivation = derivation
     this._coin = coin
     this._name = name
     this._balance = 0.0
@@ -39,13 +40,24 @@ export class Wallet {
     }
     this._node = bitcoin.HDNode.fromSeedBuffer(this._seed)
     this._xPriv = this._node.toBase58()
-    this._xPub = this._node.derivePath("m/44'/0'/0'").neutered().toBase58()
-    this._yPub = 'y' + this._node.derivePath("m/49'/0'/0'").neutered().toBase58().substring(1)
-    this._zPub = 'z' + this._node.derivePath("m/84'/0'/0'").neutered().toBase58().substring(1)
+    // sPub will be used for wallet modification  (deletion, pinCode & xPub declaration)
+    // as there is no BIP for Bitcoin signed message used arbitraty code 4880 in reference to RFC-4880
+    this._sPub = 's' + this._node.derivePath("m/4880'/0'/0'").neutered().toBase58().substring(1)
+    this._walletId = bitcoin.crypto.hash160(this._xPriv).toString('hex')
+    switch (this._derivation) {
+      case 'BIP44':
+        this._xPub = this._node.derivePath("m/44'/0'/0'").neutered().toBase58()
+        break
+      case 'BIP49':
+        this._xPub = 'y' + this._node.derivePath("m/49'/0'/0'").neutered().toBase58().substring(1)
+        break
+      case 'BIP84':
+        this._xPub = 'z' + this._node.derivePath("m/84'/0'/0'").neutered().toBase58().substring(1)
+        break
+    }
     return this
   }
 
-  // TODO unit test me
   sanitize () {
     var st = new StorageDecoder(this._xPub44)
     this._mnemonic = st.encode(this._mnemonic)
@@ -96,9 +108,9 @@ export class Wallet {
     return this._node.derivePath(this.getPath(type, account, change, idx))
   }
 
-  signCreateMessage (pinCode) {
-    var root44 = this.getChildAddress('44', 0, 0, 0)
-    var toSign = this.buildToSign(root44.keyPair.getAddress().toString(), pinCode)
+  signCreateMessage (pinCode, shareXPub) {
+    var root44 = this.getChildAddress('4880', 0, 0, 0)
+    var toSign = this.buildToSign(root44.keyPair.getAddress().toString(), pinCode, shareXPub)
     var signature = bitcoinMessage.sign(toSign,
                       root44.keyPair.d.toBuffer(32),
                       root44.keyPair.compressed)
@@ -112,12 +124,14 @@ export class Wallet {
     return { signature: signature.toString('base64'), message: toSign }
   }
 
-  buildToSign (walletId, pinCode) {
+  buildToSign (walletId, pinCode, shareXPub) {
     let toSign = {}
     toSign['ticker'] = this._coin.ticker
-    toSign['xPub'] = this._xPub
-    toSign['yPub'] = this._yPub
-    toSign['zPub'] = this._zPub
+    toSign['walletId'] = this._walletId
+    toSign['sPub'] = this._sPub
+    if (shareXPub) {
+      toSign['xPub'] = this._xPub
+    }
     toSign['pinCode'] = pinCode
     toSign['name'] = this.name
     return btoa(JSON.stringify(toSign))

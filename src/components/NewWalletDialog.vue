@@ -16,6 +16,13 @@
             <v-flex xs12>
                 <v-text-field :rules="ruleReq" v-model="name" label="Name" required></v-text-field>
             </v-flex>
+              <v-flex xs-12>
+                <v-radio-group v-model="derivation">
+                  <v-radio  label="legacy" value="BIP44"></v-radio>
+                  <v-radio  label="P2SH-P2WPKH" value="BIP49"></v-radio>
+                  <v-radio  label="Segwit" value="BIP84"></v-radio>
+                </v-radio-group>
+              </v-flex>
             <v-flex xs12 sm6>
               <v-select
                 :rules="ruleReq"
@@ -26,7 +33,7 @@
                 item-text="name"
                 item-value="ticker"
                 return-object
-                :hint="`${coin.ticker}, ${coin.name}`"
+                :hint="`${coin.ticker} ${coin.name}`"
                 persistent-hint
               ></v-select>
             </v-flex>
@@ -63,6 +70,7 @@ export default {
       coin: { name: '', ticker: '' }, // an object of coin defs.
       coinDefs: Coins.getArray(),
       name: null,
+      derivation: 'BIP84',
       ruleReq: [
         (v) => !!v || 'Field is required'
       ]

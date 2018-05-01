@@ -104,7 +104,9 @@ export default {
     },
     storeWallet (decodeKey) {
       let wallet = new Wallet(Transient.getters.newWallet._coin, Transient.getters.newWallet._name)
+      wallet._walletId = Transient.getters.newWallet._walletId
       wallet._mnemonic = Transient.getters.newWallet._mnemonic
+      wallet._sPub = Transient.getters.newWallet._sPub
       wallet._xPub = Transient.getters.newWallet._xPub
       wallet._yPub = Transient.getters.newWallet._yPub
       wallet._zPub = Transient.getters.newWallet._zPub
@@ -113,6 +115,8 @@ export default {
       Transient.commit('addWallet', wallet)
       let wallet2 = new Wallet(Transient.getters.newWallet._coin, Transient.getters.newWallet._name)
       wallet2._mnemonic = Transient.getters.newWallet._mnemonic
+      wallet2._walletId = Transient.getters.newWallet._walletId
+      wallet2._sPub = Transient.getters.newWallet._sPub
       wallet2._xPub = Transient.getters.newWallet._xPub
       wallet2._yPub = Transient.getters.newWallet._yPub
       wallet2._zPub = Transient.getters.newWallet._zPub
@@ -124,14 +128,14 @@ export default {
     },
     submitWallet () {
       if (!this.validated) return
-      var data = this.wallet.signCreateMessage(Transient.getters.pinCode)
+      var data = this.wallet.signCreateMessage(Transient.getters.pinCode, false)
       this.$http.post(this.$baseUrl + '/api/wallet/create', data).then(function (res) {
         if (res.body.error) {
           EventBus.$emit(Events.apiError, res.body.status, res.body.error)
           return
         }
         if (res.body.message &&
-            res.body.xPub !== null &&
+            res.body.walletId !== null &&
             res.body.message.decodeKey !== null) {
           try {
             this.storeWallet(res.body.message.decodeKey)

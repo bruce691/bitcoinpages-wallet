@@ -30,8 +30,8 @@ Vue.prototype.$http = axios
 var WSURL = 'wss://' + window.location.host + '/wss'
 
 if (process.env.NODE_ENV === 'development') {
-  Vue.prototype.$baseUrl = 'http://127.0.0.1:4567'
-  WSURL = 'ws://127.0.0.1:4567/wss'
+  Vue.prototype.$baseUrl = 'http://192.168.1.49:4567'
+  WSURL = 'ws://192.168.1.49:4567/wss'
 } else {
   Vue.prototype.$baseUrl = ''
 }
